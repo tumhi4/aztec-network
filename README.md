@@ -58,14 +58,37 @@ sudo systemctl enable docker && sudo systemctl restart docker
 
 ## 🧰 Step 2: Install Aztec Tools
 
+
 ```bash
 bash -i <(curl -s https://install.aztec.network)
 ```
 
-Restart your terminal, then verify:
+If prompted with:
+
+```
+The directory /root/.aztec/bin is not in your PATH.
+Add it to /root/.bash_profile to make the aztec binaries accessible? (y/n)
+```
+
+Type `y` to automatically add it to your `PATH`. If you skip this, you can manually update your shell config:
+
+```bash
+echo 'export PATH="$PATH:/root/.aztec/bin"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Then verify installation:
 
 ```bash
 aztec
+```
+
+---
+
+## ♻️ Step 3: Update Aztec
+
+```bash
+aztec-up alpha-testnet
 ```
 
 ---
