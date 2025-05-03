@@ -1,83 +1,80 @@
-# Aztec Network Sequencer Node Guide
+# 🚀 Aztec Sequencer Node Setup – Comprehensive Guide
 
-A step-by-step guide for setting up a **Sequencer Node** on the Aztec Network testnet and earning the `Apprentice` role.
-
----
-
-## 🧠 Node Types in Aztec Testnet
-
-* **Sequencer**: Proposes and validates blocks, participates in voting on upgrades.
+This guide walks you through setting up a **Sequencer Node** on the Aztec Network testnet and earning the `Apprentice` role.
 
 ---
 
-## 🔰 Roles Info
+## 🔍 Overview of Node Roles
 
-See the full roles information here: [Start Here (Discord)](https://discord.com/channels/1144692727120937080/1367196595866828982/1367323893324582954)
-
----
-
-## 💻 Hardware Requirements
-
-* **Sequencer Node**: 8 cores CPU, 16GB RAM, 100GB+ SSD
+* **Sequencer**: Plays a vital role in proposing blocks, validating them, and participating in upgrade governance.
 
 ---
 
-## ☁️ For VPS Users
+## 📜 Role Requirements
 
-You can use a VPS with 4-core CPU & 8GB RAM.
+To learn about different roles and responsibilities, check the official Aztec Discord:
+👉 [Role Details Here](https://discord.com/channels/1144692727120937080/1367196595866828982/1367323893324582954)
 
 ---
 
-## 🔧 Step 1: Install Dependencies
+## 💻 System Requirements
+
+* **Recommended Specs**: 8-core CPU, 16GB RAM, SSD with 100GB+ space
+* **Minimum for VPS**: 4-core CPU, 8GB RAM
+
+---
+
+## ⚙️ Step 1: System Dependencies
+
+Start by installing the required tools and libraries:
 
 ```bash
-sudo apt-get update && sudo apt-get upgrade -y
-sudo apt install curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip libleveldb-dev -y
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli \
+libgbm1 pkg-config libssl-dev libleveldb-dev tar clang bsdmainutils ncdu unzip -y
 ```
 
 ### Install Docker:
 
 ```bash
 for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
-sudo apt-get install ca-certificates curl gnupg -y
+sudo apt install ca-certificates curl gnupg -y
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-echo \ 
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \ 
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt update && sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 sudo docker run hello-world
 sudo systemctl enable docker && sudo systemctl restart docker
 ```
 
 ---
 
-## 🧰 Step 2: Install Aztec Tools
-
+## 🪰 Step 2: Install Aztec CLI Tools
 
 ```bash
 bash -i <(curl -s https://install.aztec.network)
 ```
 
-If prompted with:
+If prompted:
 
 ```
 The directory /root/.aztec/bin is not in your PATH.
 Add it to /root/.bash_profile to make the aztec binaries accessible? (y/n)
 ```
 
-Type `y` to automatically add it to your `PATH`. If you skip this, you can manually update your shell config:
+Type `y`, or manually add it later:
 
 ```bash
-echo 'export PATH="$PATH:/root/.aztec/bin"' >> ~/.bashrc
-source ~/.bashrc
+echo 'export PATH="$PATH:/root/.aztec/bin"' >> ~/.bashrc && source ~/.bashrc
 ```
 
-Then verify installation:
+Test:
 
 ```bash
 aztec
@@ -85,7 +82,7 @@ aztec
 
 ---
 
-## ♻️ Step 3: Update Aztec
+## 🔄 Step 3: Update to Latest Testnet
 
 ```bash
 aztec-up alpha-testnet
@@ -93,59 +90,66 @@ aztec-up alpha-testnet
 
 ---
 
-## 🔗 Step 4: Obtain RPC URLs
+## 🌐 Step 4: RPC Provider Setup
 
-* **RPC URL**: [Alchemy (Free)](https://dashboard.alchemy.com/)
-* **BEACON URL**: [drpc (Free)](https://drpc.org/)
-* **Paid Option**: [Ankr](https://www.ankr.com/)
+You’ll need both Execution and Consensus layer URLs:
 
-You may also run your own Geth & Prysm nodes if preferred.
+* **Execution (L1)**: [Alchemy (Free)](https://dashboard.alchemy.com/)
+* **Consensus (Beacon)**: [drpc (Free)](https://drpc.org/)
+* **Optional (Premium)**: [Ankr](https://ankr.com/)
 
----
-
-## 🔐 Step 5: Generate Ethereum Keys
-
-* Get an EVM wallet (Metamask or similar)
-* Save both **Private Key** and **Public Address**
+You may also self-host Geth + Prysm if needed.
 
 ---
 
-## ⛽ Step 6: Get Sepolia ETH
+## 🔑 Step 5: Prepare Ethereum Wallet
 
-Here are a few recommended Sepolia faucets you can use to fund your wallet:
+* Install a wallet like MetaMask
+* Export and **securely store**:
 
-* [Alchemy Sepolia Faucet](https://sepoliafaucet.com/)
-* [QuickNode Sepolia Faucet](https://faucet.quicknode.com/ethereum/sepolia)
-* [Infura Sepolia Faucet](https://www.infura.io/faucet/sepolia)
-* [Chainlink Sepolia Faucet](https://faucets.chain.link/sepolia)
+  * `Private Key`
+  * `Public Address`
 
-## Make sure to have your EVM wallet address ready (e.g., from MetaMask). Most faucets require a GitHub, X (Twitter), or Google login.
+---
 
-## 🌍 Step 7: Get Public IP
+## ⛽ Step 6: Get Sepolia ETH (Testnet)
+
+Faucets to use:
+
+* [Alchemy](https://sepoliafaucet.com/)
+* [QuickNode](https://faucet.quicknode.com/ethereum/sepolia)
+* [Infura](https://www.infura.io/faucet/sepolia)
+* [Chainlink](https://faucets.chain.link/sepolia)
+
+> ⚠️ Most faucets require authentication (GitHub, Twitter, or Google).
+
+---
+
+## 🌍 Step 7: Get Server Public IP
 
 ```bash
 curl ipv4.icanhazip.com
 ```
 
-Save the result.
-
 ---
 
----
+## 🗰️ Step 8: Configure `.env`
 
-## 🚀 Step 9: Start Sequencer Node with Docker Compose
-
-### Create a `.env` file:
+Create a `.env` file in your project folder:
 
 ```env
 ETHEREUM_HOSTS=https://sepolia.rpc.url
 L1_CONSENSUS_HOST_URLS=https://beacon.rpc.url
 VALIDATOR_PRIVATE_KEY=0xYourPrivateKey
 VALIDATOR_ADDRESS=0xYourAddress
-P2P_IP=YourServerIP
+P2P_IP=YourServerPublicIP
 ```
 
-### Create `docker-compose.yml`:
+---
+
+## 💠 Step 9: Docker Compose Setup
+
+Create `docker-compose.yml`:
 
 ```yaml
 services:
@@ -173,7 +177,7 @@ volumes:
   data:
 ```
 
-### Start your node:
+Launch:
 
 ```bash
 docker compose --env-file .env up -d
@@ -181,15 +185,15 @@ docker compose --env-file .env up -d
 
 ---
 
-## 🔄 Step 10: Sync Node
+## ⏳ Step 10: Wait for Full Sync
 
-Takes a few minutes. Wait until fully synced.
+This might take a few minutes depending on your node's performance.
 
 ---
 
-## 🏅 Step 11: Get Apprentice Role
+## 🏁 Step 11: Apprentice Role Verification
 
-1. Get the latest block:
+1. Get current block:
 
 ```bash
 curl -s -X POST -H 'Content-Type: application/json' \
@@ -197,7 +201,7 @@ curl -s -X POST -H 'Content-Type: application/json' \
 http://localhost:8080 | jq -r ".result.proven.number"
 ```
 
-2. Generate sync proof:
+2. Generate proof:
 
 ```bash
 curl -s -X POST -H 'Content-Type: application/json' \
@@ -205,21 +209,21 @@ curl -s -X POST -H 'Content-Type: application/json' \
 http://localhost:8080 | jq -r ".result"
 ```
 
-3. On Discord, type:
+3. Join Discord and use the command:
 
 ```
 /operator start
 ```
 
-Fill in:
+Enter:
 
 * `address`: Your wallet address
-* `block-number`: From Step 1
-* `proof`: From Step 2 (base64 string)
+* `block-number`: From step 1
+* `proof`: From step 2
 
 ---
 
-## 📝 Step 12: Register Validator
+## 📝 Step 12: Register Your Validator
 
 ```bash
 aztec add-l1-validator \
@@ -231,17 +235,18 @@ aztec add-l1-validator \
   --l1-chain-id 11155111
 ```
 
-Only 10 registrations are allowed per day.
+> Limited to 10 validators per day.
 
 ---
 
-## 🔍 Step 13: Validator Status
+## 📊 Step 13: Validator Status
 
-Check your validator here: [aztecscan.xyz/validators](https://aztecscan.xyz/validators)
+Check here:
+👉 [https://aztecscan.xyz/validators](https://aztecscan.xyz/validators)
 
 ---
 
-## 🔒 (Optional) Step 14: Configure Firewall
+## 🔒 Step 14: (Optional) Firewall Rules
 
 ```bash
 ufw allow 22
@@ -253,4 +258,4 @@ ufw enable
 
 ---
 
-Happy Sequencing! 🎯
+🎉 **You're all set!** Your Sequencer node is live and syncing. Best of luck as you explore the Aztec ecosystem!
