@@ -93,14 +93,6 @@ aztec-up alpha-testnet
 
 ---
 
-## ♻️ Step 3: Update Aztec
-
-```bash
-aztec-up alpha-testnet
-```
-
----
-
 ## 🔗 Step 4: Obtain RPC URLs
 
 * **RPC URL**: [Alchemy (Free)](https://dashboard.alchemy.com/)
