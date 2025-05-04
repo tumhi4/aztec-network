@@ -14,14 +14,28 @@ mkdir -p $INSTALL_DIR && cd $INSTALL_DIR
 ENV_FILE="/root/$INSTALL_DIR/.env"
 
 if [ -f "$ENV_FILE" ]; then
-  source "$ENV_FILE"
-  if [ -n "$ETHEREUM_HOSTS" ] && [ -n "$L1_CONSENSUS_HOST_URLS" ] && [ -n "$VALIDATOR_PRIVATE_KEY" ] && [ -n "$VALIDATOR_ADDRESS" ] && [ -n "$P2P_IP" ]; then
-    read -p "🔁 Found existing .env file with valid values. Do you want to reuse it? (y/n): " REUSE_ENV
-    if [[ "$REUSE_ENV" =~ ^[Yy]$ ]]; then
-      echo "✅ Reusing existing .env file."
-    else
-      unset ETHEREUM_HOSTS L1_CONSENSUS_HOST_URLS VALIDATOR_PRIVATE_KEY VALIDATOR_ADDRESS P2P_IP
+  echo "🔍 Validating existing .env file..."
+  source_env_ok=true
+  while IFS='=' read -r key value; do
+    if [[ -z "$value" ]]; then
+      source_env_ok=false
+      break
     fi
+  done < <(grep -v '^#' "$ENV_FILE")
+
+  if [ "$source_env_ok" = true ]; then
+    export $(grep -v '^#' "$ENV_FILE" | xargs)
+    if [ -n "$ETHEREUM_HOSTS" ] && [ -n "$L1_CONSENSUS_HOST_URLS" ] && [ -n "$VALIDATOR_PRIVATE_KEY" ] && [ -n "$VALIDATOR_ADDRESS" ] && [ -n "$P2P_IP" ]; then
+      read -p "🔁 Found existing .env file with valid values. Do you want to reuse it? (y/n): " REUSE_ENV
+      if [[ "$REUSE_ENV" =~ ^[Yy]$ ]]; then
+        echo "✅ Reusing existing .env file."
+      else
+        unset ETHEREUM_HOSTS L1_CONSENSUS_HOST_URLS VALIDATOR_PRIVATE_KEY VALIDATOR_ADDRESS P2P_IP
+      fi
+    fi
+  else
+    echo "⚠️ .env file contains invalid or empty values. Please re-enter."
+    unset ETHEREUM_HOSTS L1_CONSENSUS_HOST_URLS VALIDATOR_PRIVATE_KEY VALIDATOR_ADDRESS P2P_IP
   fi
 fi
 
