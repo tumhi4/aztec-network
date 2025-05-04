@@ -307,20 +307,7 @@ ufw enable
 To check if your node is fully synced with the network, compare its block height with a trusted live RPC endpoint:
 
 ```bash
-LOCAL=$(curl -s -X POST -H 'Content-Type: application/json' \
--d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":1}' http://localhost:8080 | jq -r '.result.proven.number')
-
-REMOTE=$(curl -s -X POST -H 'Content-Type: application/json' \
--d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":1}' https://aztec-rpc.cerberusnode.com/ | jq -r '.result.proven.number')
-
-echo "🧭 Local block:  $LOCAL"
-echo "🌐 Remote block: $REMOTE"
-
-if [ "$LOCAL" = "$REMOTE" ]; then
-  echo "✅ Your node is fully synced!"
-else
-  echo "⏳ Still syncing... ($LOCAL / $REMOTE)"
-fi
+bash <(curl -s https://raw.githubusercontent.com/cerberus-node/aztec-network/refs/heads/main/sync-check.sh)
 ```
 
 🎉 **Setup Complete**
