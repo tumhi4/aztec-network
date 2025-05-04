@@ -6,27 +6,59 @@ This guide walks you through setting up a **Sequencer Node** on the Aztec Networ
 
 ## 🔍 Overview of Node Roles
 
-* **Sequencer**: Plays a vital role in proposing blocks, validating them, and participating in upgrade governance.
+* **Sequencer**: Proposes and validates blocks, and participates in governance voting. Operates the rollup, contributes to block production, and ensures data availability.
 
 ---
 
 ## 📜 Role Requirements
 
-To learn about different roles and responsibilities, check the official Aztec Discord:
+To understand the full range of node roles and their requirements, visit the Aztec Discord:
 👉 [Role Details Here](https://discord.com/channels/1144692727120937080/1367196595866828982/1367323893324582954)
 
 ---
 
 ## 💻 System Requirements
 
-* **Recommended Specs**: 8-core CPU, 16GB RAM, SSD with 100GB+ space
-* **Minimum for VPS**: 4-core CPU, 8GB RAM
+| Component | Recommended           | Minimum for VPS       |
+| --------- | --------------------- | --------------------- |
+| CPU       | 8 cores               | 4 cores               |
+| RAM       | 16 GB                 | 8 GB                  |
+| Storage   | 100 GB+ SSD           | 50 GB SSD             |
+| OS        | Ubuntu 22.04 or 24.04 | Ubuntu 22.04 or later |
 
 ---
 
-## ⚙️ Step 1: System Dependencies
+## ⚙️ Setup Methods
 
-Start by installing the required tools and libraries:
+Aztec provides two ways to set up your Sequencer Node:
+
+### 🔹 Option 1: ⚡ One-Line Quick Setup *(Best for new VPS users)*
+
+Run this command to perform a full automated installation:
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/cerberus-node/aztec-network/main/aztec-sequencer-install.sh)
+```
+
+✅ What this script does:
+
+* Installs all dependencies
+* Installs Docker
+* Pulls Aztec image
+* Creates `.env` and mounts Docker volume
+* Starts the sequencer container
+
+> ⚠️ Use only on fresh Ubuntu 22.04/24.04 servers with sudo access.
+
+---
+
+### 🔹 Option 2: 🛠️ Manual Setup *(Advanced/Custom setup)*
+
+Follow this path if you want full control over configurations and execution.
+
+---
+
+## ⚙️ Step 1: Install System Dependencies
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -55,26 +87,26 @@ sudo systemctl enable docker && sudo systemctl restart docker
 
 ---
 
-## 🪰 Step 2: Install Aztec CLI Tools
+## 🪛 Step 2: Install Aztec CLI Tools
 
 ```bash
 bash -i <(curl -s https://install.aztec.network)
 ```
 
-If prompted:
+When prompted:
 
 ```
 The directory /root/.aztec/bin is not in your PATH.
 Add it to /root/.bash_profile to make the aztec binaries accessible? (y/n)
 ```
 
-Type `y`, or manually add it later:
+Choose `y`, or run manually:
 
 ```bash
 echo 'export PATH="$PATH:/root/.aztec/bin"' >> ~/.bashrc && source ~/.bashrc
 ```
 
-Test:
+Verify:
 
 ```bash
 aztec
@@ -82,7 +114,7 @@ aztec
 
 ---
 
-## 🔄 Step 3: Update to Latest Testnet
+## 🔄 Step 3: Join Alpha Testnet
 
 ```bash
 aztec-up alpha-testnet
@@ -90,43 +122,38 @@ aztec-up alpha-testnet
 
 ---
 
-## 🌐 Step 4: RPC Provider Setup
+## 🌐 Step 4: RPC Providers Setup
 
-You’ll need both Execution and Consensus layer URLs:
-* **Best choice(RPC and Beacon):** [ChainStack](https://console.chainstack.com/)
+You will need URLs for:
 
-* **Execution (L1)**: [Alchemy (Free)](https://dashboard.alchemy.com/)
-* **Consensus (Beacon)**: [drpc (Free)](https://drpc.org/)
-* **Optional (Premium)**: [Ankr](https://ankr.com/)
+* **Execution (L1)** – e.g., [Alchemy](https://dashboard.alchemy.com/)
+* **Consensus (Beacon)** – e.g., [drpc](https://drpc.org/), [Chainstack](https://console.chainstack.com/)
 
-You may also self-host Geth + Prysm if needed.
+You may also run Geth + Prysm if preferred.
 
 ---
 
 ## 🔑 Step 5: Prepare Ethereum Wallet
 
-* Install a wallet like MetaMask
-* Export and **securely store**:
+Use MetaMask or any Ethereum-compatible wallet. Securely store:
 
-  * `Private Key`
-  * `Public Address`
+* Public address
+* Private key (you will paste this into `.env`)
 
 ---
 
 ## ⛽ Step 6: Get Sepolia ETH (Testnet)
 
-Faucets to use:
+Request funds from:
 
-* [Alchemy](https://sepoliafaucet.com/)
+* [Alchemy Faucet](https://sepoliafaucet.com/)
 * [QuickNode](https://faucet.quicknode.com/ethereum/sepolia)
 * [Infura](https://www.infura.io/faucet/sepolia)
-* [Chainlink](https://faucets.chain.link/sepolia)
-
-> ⚠️ Most faucets require authentication (GitHub, Twitter, or Google).
+* [Chainlink Faucet](https://faucets.chain.link/sepolia)
 
 ---
 
-## 🌍 Step 7: Get Server Public IP
+## 🌍 Step 7: Get Public IP
 
 ```bash
 curl ipv4.icanhazip.com
@@ -134,9 +161,9 @@ curl ipv4.icanhazip.com
 
 ---
 
-## 🗰️ Step 8: Configure `.env`
+## 🗃️ Step 8: Create .env file
 
-Create a `.env` file in your project folder:
+Example:
 
 ```env
 ETHEREUM_HOSTS=https://sepolia.rpc.url
@@ -148,9 +175,7 @@ P2P_IP=YourServerPublicIP
 
 ---
 
-## 💠 Step 9: Docker Compose Setup
-
-Create `docker-compose.yml`:
+## 🐳 Step 9: Docker Compose
 
 ```yaml
 services:
@@ -178,7 +203,7 @@ volumes:
   data:
 ```
 
-Launch:
+Start:
 
 ```bash
 docker compose --env-file .env up -d
@@ -186,50 +211,39 @@ docker compose --env-file .env up -d
 
 ---
 
-## ⏳ Step 10: Wait for Full Sync
+## ⏳ Step 10: Wait for Node to Sync
 
-This might take a few minutes depending on your node's performance.
+Monitor logs:
+
+```bash
+docker logs -f aztec-sequencer
+```
 
 ---
 
-## 🏁 Step 11: Apprentice Role Verification
+## 🧾 Step 11: Generate Proof for Role Verification
 
-1. Get current block:
-
-```bash
-curl -s -X POST -H 'Content-Type: application/json' \
--d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":67}' \
-http://localhost:8080 | jq -r ".result.proven.number"
-```
-
-2. Generate proof:
+1. Get block number:
 
 ```bash
-curl -s -X POST -H 'Content-Type: application/json' \
--d '{"jsonrpc":"2.0","method":"node_getArchiveSiblingPath","params":["BLOCK","BLOCK"],"id":67}' \
-http://localhost:8080 | jq -r ".result"
-```
-or you can use in single command 
-```
 BLOCK=$(curl -s -X POST -H 'Content-Type: application/json' \
 -d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":67}' \
-http://localhost:8080 | jq -r ".result.proven.number") && \
-echo "🔢 Block number: $BLOCK" && \
+http://localhost:8080 | jq -r ".result.proven.number")
+```
+
+2. Get proof:
+
+```bash
 curl -s -X POST -H 'Content-Type: application/json' \
 -d "{\"jsonrpc\":\"2.0\",\"method\":\"node_getArchiveSiblingPath\",\"params\":[\"$BLOCK\",\"$BLOCK\"],\"id\":67}" \
 http://localhost:8080 | jq -r ".result"
 ```
-3. Join Discord and use the command:
 
-```
-/operator start
-```
+3. Go to Discord and run `/operator start`, then enter:
 
-Enter:
-
-* `address`: Your wallet address
-* `block-number`: From step 1
-* `proof`: From step 2
+* `address`: your wallet
+* `block-number`: from step 1
+* `proof`: from step 2
 
 ---
 
@@ -245,18 +259,16 @@ aztec add-l1-validator \
   --l1-chain-id 11155111
 ```
 
-> Limited to 10 validators per day.
-
 ---
 
-## 📊 Step 13: Validator Status
+## 📊 Step 13: Validator Dashboard
 
-Check here:
+Track your validator status here:
 👉 [https://aztecscan.xyz/validators](https://aztecscan.xyz/validators)
 
 ---
 
-## 🔒 Step 14: (Optional) Firewall Rules
+## 🔒 Step 14: Firewall (Optional)
 
 ```bash
 ufw allow 22
@@ -268,4 +280,8 @@ ufw enable
 
 ---
 
-🎉 **You're all set!** Your Sequencer node is live and syncing. Best of luck as you explore the Aztec ecosystem!
+🎉 **Setup Complete**
+
+Your Aztec Sequencer Node is now live and syncing. You're ready to earn the Apprentice role and contribute to the testnet. Good luck!
+
+---
