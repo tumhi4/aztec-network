@@ -93,7 +93,7 @@ aztec-up alpha-testnet
 ## 🌐 Step 4: RPC Provider Setup
 
 You’ll need both Execution and Consensus layer URLs:
-* **Best choice(RPC and Beacon)**[ChainStack](https://console.chainstack.com/)
+* **Best choice(RPC and Beacon):** [ChainStack](https://console.chainstack.com/)
 
 * **Execution (L1)**: [Alchemy (Free)](https://dashboard.alchemy.com/)
 * **Consensus (Beacon)**: [drpc (Free)](https://drpc.org/)
