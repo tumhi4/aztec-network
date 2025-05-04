@@ -171,7 +171,7 @@ services:
       - 40400:40400/udp
       - 8080:8080
     volumes:
-      - ./data:/data
+      - ./data:/root/.aztec
     network_mode: host
 
 volumes:
