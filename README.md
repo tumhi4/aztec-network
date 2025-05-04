@@ -51,8 +51,30 @@ bash <(curl -s https://raw.githubusercontent.com/cerberus-node/aztec-network/mai
 > ⚠️ Use only on fresh Ubuntu 22.04/24.04 servers with sudo access.
 
 ---
+### 🔹 Option 2: ⚡ One-Line Quick Setup *(Best for new VPS users)*
 
-### 🔹 Option 2: 🛠️ Manual Setup *(Advanced/Custom setup)*
+Run this command to perform a full automated installation:
+
+```bash
+curl -O https://raw.githubusercontent.com/cerberus-node/aztec-network/main/aztec-sequencer-systemd.sh && chmod +x aztec-sequencer-systemd.sh && sudo ./aztec-sequencer-systemd.sh
+```
+
+✅ What this script does:
+
+* Installs all dependencies
+* Installs Docker
+* Pulls Aztec image
+* Creates `.env`
+* Starts the systemd service
+
+Check your logs
+```bash
+journalctl  -f -u aztec-sequencer.service 
+```
+
+> ⚠️ Use only on fresh Ubuntu 22.04/24.04 servers with sudo access.
+---
+### 🔹 Option 3: 🛠️ Manual Setup *(Advanced/Custom setup)*
 
 Follow this path if you want full control over configurations and execution.
 
