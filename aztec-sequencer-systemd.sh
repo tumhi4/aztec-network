@@ -11,13 +11,27 @@ INSTALL_DIR="aztec-sequencer"
 echo "📁 Creating project directory: $INSTALL_DIR"
 mkdir -p $INSTALL_DIR && cd $INSTALL_DIR
 
-read -p "🔗 Enter Ethereum RPC URL (e.g. https://sepolia.rpc.url): " ETHEREUM_HOSTS
-read -p "🔗 Enter Beacon RPC URL (e.g. https://beacon.rpc.url): " L1_CONSENSUS_HOST_URLS
-read -p "🔑 Enter your Ethereum Private Key (0x...): " VALIDATOR_PRIVATE_KEY
-read -p "🏦 Enter your Ethereum Address (0x...): " VALIDATOR_ADDRESS
+ENV_FILE="/root/$INSTALL_DIR/.env"
 
-P2P_IP=$(curl -s ipv4.icanhazip.com)
-echo "🌍 Detected Public IP: $P2P_IP"
+if [ -f "$ENV_FILE" ]; then
+  source "$ENV_FILE"
+  if [ -n "$ETHEREUM_HOSTS" ] && [ -n "$L1_CONSENSUS_HOST_URLS" ] && [ -n "$VALIDATOR_PRIVATE_KEY" ] && [ -n "$VALIDATOR_ADDRESS" ] && [ -n "$P2P_IP" ]; then
+    read -p "🔁 Found existing .env file with valid values. Do you want to reuse it? (y/n): " REUSE_ENV
+    if [[ "$REUSE_ENV" =~ ^[Yy]$ ]]; then
+      echo "✅ Reusing existing .env file."
+    else
+      unset ETHEREUM_HOSTS L1_CONSENSUS_HOST_URLS VALIDATOR_PRIVATE_KEY VALIDATOR_ADDRESS P2P_IP
+    fi
+  fi
+fi
+
+if [ -z "$ETHEREUM_HOSTS" ]; then read -p "🔗 Enter Ethereum RPC URL (e.g. https://sepolia.rpc.url): " ETHEREUM_HOSTS; fi
+if [ -z "$L1_CONSENSUS_HOST_URLS" ]; then read -p "🔗 Enter Beacon RPC URL (e.g. https://beacon.rpc.url): " L1_CONSENSUS_HOST_URLS; fi
+if [ -z "$VALIDATOR_PRIVATE_KEY" ]; then read -p "🔑 Enter your Ethereum Private Key (0x...): " VALIDATOR_PRIVATE_KEY; fi
+if [ -z "$VALIDATOR_ADDRESS" ]; then read -p "🏦 Enter your Ethereum Address (0x...): " VALIDATOR_ADDRESS; fi
+if [ -z "$P2P_IP" ]; then P2P_IP=$(curl -s ipv4.icanhazip.com); fi
+
+echo "🌍 Using Public IP: $P2P_IP"
 
 # Step 0: Install Dependencies
 echo "🔧 Installing system dependencies..."
@@ -45,14 +59,19 @@ else
   echo "✅ Docker is already installed. Skipping installation."
 fi
 
-# Step 2: Install Aztec CLI Tools
-echo "🧰 Installing Aztec CLI tools..."
-bash -i <(curl -s https://install.aztec.network)
+# Step 2: Install or Update Aztec CLI Tools
+if ! command -v aztec &> /dev/null; then
+  echo "🧰 Installing Aztec CLI tools..."
+  bash -i <(curl -s https://install.aztec.network)
+else
+  echo "🔄 Aztec CLI already installed. Updating to latest testnet version..."
+  /root/.aztec/bin/aztec-up alpha-testnet || aztec-up alpha-testnet
+fi
 echo 'export PATH="$PATH:/root/.aztec/bin"' >> ~/.bashrc && source ~/.bashrc
 
 # Create .env file
 echo "📄 Creating .env file..."
-cat <<EOF > .env
+cat <<EOF > "$ENV_FILE"
 ETHEREUM_HOSTS=$ETHEREUM_HOSTS
 L1_CONSENSUS_HOST_URLS=$L1_CONSENSUS_HOST_URLS
 VALIDATOR_PRIVATE_KEY=$VALIDATOR_PRIVATE_KEY
@@ -60,7 +79,7 @@ VALIDATOR_ADDRESS=$VALIDATOR_ADDRESS
 P2P_IP=$P2P_IP
 EOF
 
-echo "✅ .env file created."
+echo "✅ .env file saved."
 
 # Create systemd service using CLI (not Docker)
 read -p "🛠️ Do you want to set this up as a systemd service using Aztec CLI? (y/n): " SETUP_SYSTEMD
@@ -75,6 +94,7 @@ After=network.target
 [Service]
 WorkingDirectory=/root/$INSTALL_DIR
 EnvironmentFile=/root/$INSTALL_DIR/.env
+Environment=HOME=/root
 ExecStart=/root/.aztec/bin/aztec \
   start --node --archiver --sequencer \
   --network alpha-testnet \
