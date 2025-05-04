@@ -209,7 +209,16 @@ curl -s -X POST -H 'Content-Type: application/json' \
 -d '{"jsonrpc":"2.0","method":"node_getArchiveSiblingPath","params":["BLOCK","BLOCK"],"id":67}' \
 http://localhost:8080 | jq -r ".result"
 ```
-
+or you can use in single command 
+```
+BLOCK=$(curl -s -X POST -H 'Content-Type: application/json' \
+-d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":67}' \
+http://localhost:8080 | jq -r ".result.proven.number") && \
+echo "🔢 Block number: $BLOCK" && \
+curl -s -X POST -H 'Content-Type: application/json' \
+-d "{\"jsonrpc\":\"2.0\",\"method\":\"node_getArchiveSiblingPath\",\"params\":[\"$BLOCK\",\"$BLOCK\"],\"id\":67}" \
+http://localhost:8080 | jq -r ".result"
+```
 3. Join Discord and use the command:
 
 ```
