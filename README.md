@@ -148,8 +148,8 @@ aztec-up alpha-testnet
 
 You will need URLs for:
 
-* **Execution (L1)** – e.g., [Alchemy](https://dashboard.alchemy.com/)
-* **Consensus (Beacon)** – e.g., [drpc](https://drpc.org/), [Chainstack](https://console.chainstack.com/)
+* **Execution (L1)** – e.g., [Lava](https://gateway.lavanet.xyz/chains)
+* **Consensus (Beacon)** – e.g., [Chainstack](https://console.chainstack.com/)
 
 You may also run Geth + Prysm if preferred.
 
