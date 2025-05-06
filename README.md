@@ -319,3 +319,57 @@ bash <(curl -s https://raw.githubusercontent.com/cerberus-node/aztec-network/ref
 Your Aztec Sequencer Node is now live and syncing. You're ready to earn the Apprentice role and contribute to the testnet. Good luck!
 
 ---
+
+# 🔧 Aztec Sequencer Upgrade – Docker Guide
+
+This document adds a **safe and complete upgrade process** to your existing Aztec Sequencer Node setup, specifically for Docker users.
+---
+
+## 🚀 Upgrade via Script (Docker)
+
+We provide a script that:
+
+* Backs up your `docker-compose.yml`
+* Updates the image tag to the latest version
+* Removes the old database
+* Pulls the new image
+* Restarts your container
+
+> ✅ **Note**: You must run this script from the same directory where `docker-compose.yml` is located.
+
+### 📜 One-Line Upgrade Script
+
+You can upgrade using this single-line command (recommended):
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/cerberus-node/aztec-network/refs/heads/main/auto-upgrade.sh)
+```
+
+✅ What this script does:
+
+* Verifies `docker-compose.yml` is in the current directory
+* Backs up and updates the image version
+* Removes old database
+* Pulls the latest image
+* Restarts the container
+* Streams logs for confirmation
+---
+
+## 🧪 Final Check – Logs
+
+After running the upgrade script, verify that your node starts syncing correctly:
+
+```bash
+docker logs -f aztec-sequencer
+```
+
+If you want to perform a health check:
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/cerberus-node/aztec-network/refs/heads/main/sync-check.sh)
+```
+
+---
+
+🎉 You’re now upgraded to the latest testnet version and ready to rejoin the Aztec network!
+
