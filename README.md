@@ -261,7 +261,13 @@ curl -s -X POST -H 'Content-Type: application/json' \
 -d "{\"jsonrpc\":\"2.0\",\"method\":\"node_getArchiveSiblingPath\",\"params\":[\"$BLOCK\",\"$BLOCK\"],\"id\":67}" \
 http://localhost:8080 | jq -r ".result"
 ```
-
+or one commmand 
+```
+Command 'pyenv' not found, did you mean:
+  command 'p7env' from deb libnss3-tools (2:3.96.1-1)
+Try: apt install <deb name>
+root@Ubuntu-2404-noble-amd64-base ~ # 
+```
 3. Go to Discord and run `/operator start`, then enter:
 
 * `address`: your wallet
