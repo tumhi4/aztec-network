@@ -40,5 +40,5 @@ while true; do
   fi
 
   echo "-------------------------------"
-  sleep 30
+  sleep 10
 done
