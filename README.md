@@ -127,6 +127,11 @@ You will need URLs for:
 * **Execution (L1)** – e.g., [Lava](https://gateway.lavanet.xyz/chains)
 * **Consensus (Beacon)** – e.g., [Chainstack](https://console.chainstack.com/)
 
+
+## 🛠️ Setup Guide for Sepolia RPC
+
+{% include_relative auto_setup_sepolia.md %}
+
 > ⚠️ Note: The Aztec client is currently only tested with geth and reth execution clients. Using other clients (e.g., Nethermind or Besu) may result in unexpected behavior or syncing issues.
 You may also run Geth + Prysm if preferred.
 
