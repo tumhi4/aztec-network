@@ -6,24 +6,49 @@
 set -e
 
 # === DEPENDENCY CHECK & INSTALL IF MISSING ===
-echo ">>> Checking system dependencies..."
-REQUIRED_CMDS=(docker "docker compose" openssl curl)
-APT_PACKAGES=(docker.io docker-compose openssl curl)
-MISSING=()
+echo ">>> Checking required dependencies..."
 
-for i in "${!REQUIRED_CMDS[@]}"; do
-  CMD_NAME=$(echo ${REQUIRED_CMDS[$i]} | awk '{print $1}')
-  if ! command -v $CMD_NAME &> /dev/null; then
-    MISSING+=(${APT_PACKAGES[$i]})
+install_if_missing() {
+  local cmd="$1"
+  local pkg="$2"
+
+  if ! command -v $cmd &> /dev/null; then
+    echo "⛔ Missing: $cmd → installing $pkg..."
+    sudo apt update
+    sudo apt install -y $pkg
+  else
+    echo "✅ $cmd is already installed."
   fi
-done
+}
 
-if [ ${#MISSING[@]} -ne 0 ]; then
-  echo "⛔ Missing dependencies: ${MISSING[@]}"
-  echo "⚙️  Installing missing dependencies..."
-  sudo apt-get update
-  sudo apt-get install -y ${MISSING[@]}
+# Special case: Docker
+if ! command -v docker &> /dev/null || ! command -v docker compose &> /dev/null; then
+  echo "⛔ Docker or Docker Compose not found. Installing Docker..."
+
+  for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do
+    sudo apt-get remove -y $pkg || true
+  done
+
+  sudo install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  sudo apt update
+  sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  sudo docker run hello-world
+  sudo systemctl enable docker && sudo systemctl restart docker
+else
+  echo "✅ Docker and Docker Compose are already installed."
 fi
+
+# Install other common dependencies
+install_if_missing curl curl
+install_if_missing openssl openssl
 
 # === CONFIG ===
 DATA_DIR="$HOME/sepolia-node"
@@ -86,10 +111,10 @@ services:
 EOF
 
 # === STEP 4: START SERVICES ===
-echo ">>> Freeing port 8545 if occupied..."
+echo ">>> Checking port 8545..."
 if lsof -i :8545 >/dev/null 2>&1; then
-  echo ">>> Port 8545 is in use. Attempting to free it..."
-  sudo fuser -k 8545/tcp || true
+  echo "❌ Port 8545 is already in use. Please stop the process using it before running this script."
+  exit 1
 fi
 
 echo ">>> Starting Sepolia node with Docker Compose..."
