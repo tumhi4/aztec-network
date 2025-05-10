@@ -6,7 +6,7 @@ This guide walks you through setting up a Sepolia Ethereum node (Geth + Lighthou
 
 ## ⚙️ System Requirements
 
-- **Disk:** 500GB+ SSD
+- **Disk:** 1TB+ SSD
 - **RAM:** 16GB+
 - **OS:** Ubuntu 20.04+ (or compatible Linux distro)
 - **Tools:** Docker, Docker Compose, `curl`, `openssl`
