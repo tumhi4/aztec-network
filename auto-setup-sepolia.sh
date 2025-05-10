@@ -5,6 +5,26 @@
 
 set -e
 
+# === DEPENDENCY CHECK & INSTALL IF MISSING ===
+echo ">>> Checking system dependencies..."
+REQUIRED_CMDS=(docker "docker compose" openssl curl)
+APT_PACKAGES=(docker.io docker-compose openssl curl)
+MISSING=()
+
+for i in "${!REQUIRED_CMDS[@]}"; do
+  CMD_NAME=$(echo ${REQUIRED_CMDS[$i]} | awk '{print $1}')
+  if ! command -v $CMD_NAME &> /dev/null; then
+    MISSING+=(${APT_PACKAGES[$i]})
+  fi
+done
+
+if [ ${#MISSING[@]} -ne 0 ]; then
+  echo "⛔ Missing dependencies: ${MISSING[@]}"
+  echo "⚙️  Installing missing dependencies..."
+  sudo apt-get update
+  sudo apt-get install -y ${MISSING[@]}
+fi
+
 # === CONFIG ===
 DATA_DIR="$HOME/sepolia-node"
 GETH_DIR="$DATA_DIR/geth"
@@ -66,6 +86,12 @@ services:
 EOF
 
 # === STEP 4: START SERVICES ===
+echo ">>> Freeing port 8545 if occupied..."
+if lsof -i :8545 >/dev/null 2>&1; then
+  echo ">>> Port 8545 is in use. Attempting to free it..."
+  sudo fuser -k 8545/tcp || true
+fi
+
 echo ">>> Starting Sepolia node with Docker Compose..."
 cd "$DATA_DIR"
 docker compose up -d
