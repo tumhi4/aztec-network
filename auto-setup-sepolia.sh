@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 🚀 Auto Setup Sepolia Geth + Lighthouse for Sequencer
-# Assumes system has at least 500GB SSD, 16GB RAM
+# Assumes system has at least 1TB SSD, 16GB RAM
 
 set -e
 
