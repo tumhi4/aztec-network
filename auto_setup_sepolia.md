@@ -15,27 +15,12 @@ This guide walks you through setting up a Sepolia Ethereum node (Geth + Lighthou
 
 ## 🚀 Setup Instructions
 
-### 1. Download the setup script
-
-Save the following script to a file named `auto-setup-sepolia.sh`:
+### Execute the following one-liner to download and run the installation script
 
 ```bash
-# Paste the full script from above here
+curl -sL https://raw.githubusercontent.com/cerberus-node/aztec-network/refs/heads/main/auto-setup-sepolia.sh -o auto-setup-sepolia.sh && chmod +x auto-setup-sepolia.sh && bash auto-setup-sepolia.sh
+
 ```
-
-Or clone from GitHub (if you push it there):
-```bash
-git clone https://github.com/your-repo/sepolia-node-setup.git
-cd sepolia-node-setup
-chmod +x auto-setup-sepolia.sh
-```
-
-### 2. Run the script
-
-```bash
-bash auto-setup-sepolia.sh
-```
-
 This will:
 - Create folder structure at `~/sepolia-node`
 - Generate a valid `jwt.hex`
@@ -55,7 +40,7 @@ curl -s -X POST http://localhost:8545 \
 
 ### Check Beacon API health:
 ```bash
-curl http://localhost:5052/eth/v1/node/health
+curl -s http://localhost:5052/eth/v1/node/syncing | jq
 ```
 
 ---
@@ -63,7 +48,7 @@ curl http://localhost:5052/eth/v1/node/health
 ## 🧠 Notes
 
 - The sync process may take several hours to complete.
-- Ensure enough disk space (500GB+) is available.
+- Ensure enough disk space (1TB+) is available.
 - Once `eth_syncing` returns `false`, your RPC is fully operational.
 - You can now connect your L2 sequencer to `localhost:8551` (Engine API).
 
