@@ -83,6 +83,7 @@ services:
       - "8551:8551"
     command: >
       --sepolia
+      --datadir /mnt/disk2/
       --http --http.addr 0.0.0.0 --http.api eth,web3,net,engine
       --authrpc.addr 0.0.0.0 --authrpc.port 8551
       --authrpc.jwtsecret /root/jwt.hex
