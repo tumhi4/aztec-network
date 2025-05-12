@@ -1,14 +1,23 @@
 #!/bin/bash
 
 REMOTE_RPC="https://aztec-rpc.cerberusnode.com"
-LOCAL_RPC="http://localhost:8080"
+
+# Check if any app is running on port 8080
+if lsof -i :8080 >/dev/null 2>&1; then
+  echo "✅ Detected app running on port 8080"
+  PORT=8080
+else
+  read -p "⚠️ No app found on port 8080. Please enter your local Aztec RPC port: " PORT
+fi
+
+LOCAL_RPC="http://localhost:$PORT"
 
 while true; do
   echo "🔍 Checking Aztec node sync status at $(date '+%Y-%m-%d %H:%M:%S')"
 
   # Check LOCAL node status
   LOCAL_RESPONSE=$(curl -s -m 5 -X POST -H 'Content-Type: application/json' \
-    -d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":1}' $LOCAL_RPC)
+    -d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":1}' "$LOCAL_RPC")
 
   if [ -z "$LOCAL_RESPONSE" ] || [[ "$LOCAL_RESPONSE" == *"error"* ]]; then
     echo "❌ Local node not responding or returned an error. Please check if it's running on $LOCAL_RPC"
@@ -19,7 +28,7 @@ while true; do
 
   # Check REMOTE node status
   REMOTE_RESPONSE=$(curl -s -m 5 -X POST -H 'Content-Type: application/json' \
-    -d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":1}' $REMOTE_RPC)
+    -d '{"jsonrpc":"2.0","method":"node_getL2Tips","params":[],"id":1}' "$REMOTE_RPC")
 
   if [ -z "$REMOTE_RESPONSE" ] || [[ "$REMOTE_RESPONSE" == *"error"* ]]; then
     echo "⚠️ Remote RPC ($REMOTE_RPC) not responding or returned an error."
